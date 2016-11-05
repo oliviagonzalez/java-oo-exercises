@@ -1,7 +1,6 @@
 package javagram;
 
 import javagram.filters.*;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -13,15 +12,14 @@ public class Javagram {
 		// Create the base path for images		
 		String[] baseParts = {System.getProperty("user.dir"), "images"};
 		String dir = String.join(File.separator, baseParts);
-		String relPath;
+		String relPath = null;
 		Picture picture = null;
 		Scanner in = new Scanner(System.in);
+		String imagePath = "path not set";
 		
 		// prompt user for image to filter and validate input
 		do {
-			
-			String imagePath = "path not set";
-			
+					
 			// try to open the file
 			try {
 				
@@ -32,16 +30,24 @@ public class Javagram {
 				
 				picture = new Picture(imagePath);
 				
-			} catch (RuntimeException e) {
+			} 
+			catch (RuntimeException e) {
 				System.out.println("Could not open image: " + imagePath);
 			}
 			
 		} while(picture == null);
 		
 		// TODO - prompt user for filter and validate input
+		int filterChoice = displayFilterMenu(in);
 		
 		// TODO - pass filter ID int to getFilter, and get an instance of Filter back 
-		BlueFilter filter = getFilter();			
+		Filter filter = null;
+		try{
+			filter = getFilter(filterChoice);
+		}
+		catch(Exception e){
+			System.err.println("getFilter threw an exception: " + e.getMessage());
+		}
 
 		// filter and display image
 		Picture processed = filter.process(picture);
@@ -50,31 +56,73 @@ public class Javagram {
 		System.out.println("Image successfully filtered");
 		
 		// save image, if desired
-		
-		System.out.println("Save image to (relative to " + dir + ") (type 'exit' to quit w/o saving):");
-		String fileName = in.next();
-		
-		// TODO - if the user enters the same file name as the input file, confirm that they want to overwrite the original
-		
-		if (fileName.equals("exit")) {
+		System.out.println("Would you like to save the image? y/n");
+		String selection = in.next();
+		while(selection.equals("y") != true && selection.equals("n") != true){
+			System.out.println("Invalid choice, please enter y or n");
+			selection = in.next();
+		}
+		if(selection.equals("n")){
 			System.out.println("Image not saved");
-		} else {
-			String absFileName = dir + File.separator + fileName;
-			processed.save(absFileName);
-			System.out.println("Image saved to " + absFileName);
-		}	
-		
+		}
+		else if(selection.equals("y")){
+			System.out.println("Save image to (relative to " + dir + ")");
+			System.out.println("New Filename?");
+			String fileName = in.next();
+			if(fileName.equals(relPath)){
+				System.out.println("Filename is the same as the original. Overwrite? y/n");
+				String overwrite = in.next();
+				while(selection.equals("y") != true && selection.equals("n") != true){
+					System.out.println("Invalid choice, please enter y or n");
+					overwrite = in.next();
+				}
+				if(overwrite.equals("y")){
+					save(dir, fileName, processed);
+				}
+				else{
+					System.out.println("Image not saved");
+				}			
+			}
+		}
 		// close input scanner
 		in.close();
 	}
 	
+	private static int displayFilterMenu(Scanner in){
+		System.out.println("Which filter would you like to use?");
+		System.out.println("1. Blue Filter");
+		System.out.println("2. Invert Filter");
+		System.out.println("3. Grayscale Filter");
+		int choice = in.nextInt();
+		while(choice < 1 && choice > 3){
+			System.out.println("Invalid choice, please choose from the list");
+			choice = in.nextInt();
+		}
+		return choice;
+	}
+	
+	private static void save(String dir, String fileName, Picture processed){
+		String absFileName = dir + File.separator + fileName;
+		processed.save(absFileName);
+		System.out.println("Image saved to " + absFileName);
+	}
+	
 	// TODO - refactor this method to accept an int parameter, and return an instance of the Filter interface
 	// TODO - refactor this method to thrown an exception if the int doesn't correspond to a filter
-	private static BlueFilter getFilter() {
-		
+	private static Filter getFilter(int choice) {
 		// TODO - create some more filters, and add logic to return the appropriate one
-		return new BlueFilter();
-		
+		if(choice < 1 && choice > 3){
+			throw new IllegalArgumentException();
+		}
+		else if(choice == 1){
+			return new BlueFilter();
+		}
+		else if(choice == 2){
+			return new InvertFilter();
+		}
+		else{
+			return new GrayscaleFilter();
+		}
 	}
 
 }

@@ -1,13 +1,14 @@
 package javagram.filters;
 
-import javagram.Picture;
 import java.awt.Color;
 
-public class BlueFilter implements Filter{
+import javagram.Picture;
+
+public class GrayscaleFilter implements Filter{
 
 	@Override
 	public Picture process(Picture original) {
-		Picture processed = new Picture(original.width(), original.height());
+Picture processed = new Picture(original.width(), original.height());
         
 	    //get each pixel one by one
 	    for (int i = 0; i < original.width(); i++) {
@@ -20,14 +21,14 @@ public class BlueFilter implements Filter{
 	          int g = c.getGreen();
 	          int b = c.getBlue();
 	          
-	          int newBlue = (r + g + b) / 3;
+	          int newColor = (r + g + b)/3;
 	          
-	          processed.set(i, j, new Color(0, 0, newBlue));
-	    	  
+	          Color color = new Color(newColor, newColor, newColor);
+	          processed.set(i, j, color);  
 	      }
 	    }
 		
 		return processed;
 	}
-
+	
 }

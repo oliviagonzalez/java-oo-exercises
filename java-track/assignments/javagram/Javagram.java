@@ -83,6 +83,9 @@ public class Javagram {
 					System.out.println("Image not saved");
 				}			
 			}
+			else{
+				save(dir, fileName, processed);
+			}
 		}
 		// close input scanner
 		in.close();
@@ -94,7 +97,7 @@ public class Javagram {
 		System.out.println("2. Invert Filter");
 		System.out.println("3. Grayscale Filter");
 		int choice = in.nextInt();
-		while(choice < 1 && choice > 3){
+		while(choice < 1 || choice > 3){
 			System.out.println("Invalid choice, please choose from the list");
 			choice = in.nextInt();
 		}
@@ -107,11 +110,9 @@ public class Javagram {
 		System.out.println("Image saved to " + absFileName);
 	}
 	
-	// TODO - refactor this method to accept an int parameter, and return an instance of the Filter interface
-	// TODO - refactor this method to thrown an exception if the int doesn't correspond to a filter
 	private static Filter getFilter(int choice) {
-		// TODO - create some more filters, and add logic to return the appropriate one
-		if(choice < 1 && choice > 3){
+		// TODO - use a switch statement
+		if(choice < 1 || choice > 3){
 			throw new IllegalArgumentException();
 		}
 		else if(choice == 1){

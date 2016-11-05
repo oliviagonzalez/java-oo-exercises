@@ -2,12 +2,13 @@ package Blogz;
 
 import java.util.regex.Pattern;
 
-public class User {
+public class User extends Entity{
 	
 	private String username;
 	private static String hashedPassword;
 	
 	public User(String un, String pw){
+		super();
 		if(IsValidUsername(un) == false){
 			throw new IllegalArgumentException();
 		}
